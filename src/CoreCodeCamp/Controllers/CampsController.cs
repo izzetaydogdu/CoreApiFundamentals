@@ -7,20 +7,23 @@ using CoreCodeCamp.Data;
 using CoreCodeCamp.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Routing;
 
 namespace CoreCodeCamp.Controllers
 {
     [Route("api/[controller]")]
-    [ApiController]
+    [ApiController]  //Attribute tells to system attempted body binding
     public class CampsController : ControllerBase
     {
         private readonly ICampRepository _campRepository;
         private readonly IMapper _mapper;
+        private readonly LinkGenerator _linkGenerator;
 
-        public CampsController(ICampRepository campRepository, IMapper mapper)
+        public CampsController(ICampRepository campRepository, IMapper mapper , LinkGenerator linkGenerator)
         {
             _campRepository = campRepository;
             _mapper = mapper;
+            _linkGenerator = linkGenerator;
         }
 
         [HttpGet]
@@ -72,6 +75,39 @@ namespace CoreCodeCamp.Controllers
             {
                 return this.StatusCode(StatusCodes.Status500InternalServerError, "Database Failure");
             }
+        }
+
+
+        public async Task<ActionResult<CampModel>> Post(CampModel model)
+        {
+            try
+            {
+                var location = _linkGenerator.GetPathByAction("Get", "Camps", new { moniker = model.Moniker });
+
+                if (string.IsNullOrWhiteSpace(location))
+                {
+                    return BadRequest("Could not use current moniker");
+                }
+
+                //Create a new Camp
+
+                var camp = _mapper.Map<Camp>(model);
+
+                _campRepository.Add(camp);
+
+                if(await _campRepository.SaveChangesAsync())
+                {
+                    return Created(location, _mapper.Map<CampModel>(camp));
+
+                }              
+
+            }
+            catch (Exception)
+            {
+                return this.StatusCode(StatusCodes.Status500InternalServerError, "Database Failure");
+            }
+
+            return BadRequest();
         }
     }
 }
