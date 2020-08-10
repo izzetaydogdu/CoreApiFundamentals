@@ -9,11 +9,11 @@ namespace CoreCodeCamp.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ValuesController : ControllerBase
+    public class CampsController : ControllerBase
     {
-        public string[] Get()
+        public object Get()
         {
-            return new[] { "Hello", "From", "Pluralsight!" };
+            return new { Moniker = "ATL2018", Name = "Atlanta Code Camp" };
         }
     }
 }
