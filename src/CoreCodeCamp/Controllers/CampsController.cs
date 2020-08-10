@@ -19,7 +19,7 @@ namespace CoreCodeCamp.Controllers
         private readonly IMapper _mapper;
         private readonly LinkGenerator _linkGenerator;
 
-        public CampsController(ICampRepository campRepository, IMapper mapper , LinkGenerator linkGenerator)
+        public CampsController(ICampRepository campRepository, IMapper mapper, LinkGenerator linkGenerator)
         {
             _campRepository = campRepository;
             _mapper = mapper;
@@ -61,7 +61,7 @@ namespace CoreCodeCamp.Controllers
         }
 
         [HttpGet("search")]
-        public async Task<ActionResult<CampModel[]>> SearchByDate(DateTime theDate , bool includeTalks = false)
+        public async Task<ActionResult<CampModel[]>> SearchByDate(DateTime theDate, bool includeTalks = false)
         {
             try
             {
@@ -101,12 +101,35 @@ namespace CoreCodeCamp.Controllers
 
                 _campRepository.Add(camp);
 
-                if(await _campRepository.SaveChangesAsync())
+                if (await _campRepository.SaveChangesAsync())
                 {
                     return Created(location, _mapper.Map<CampModel>(camp));
 
-                }              
+                }
 
+            }
+            catch (Exception)
+            {
+                return this.StatusCode(StatusCodes.Status500InternalServerError, "Database Failure");
+            }
+
+            return BadRequest();
+        }
+
+        [HttpPut("{moniker}")]
+        public async Task<ActionResult<CampModel>> Put(string moniker, CampModel model)
+        {
+            try
+            {
+                var existingCamp = await _campRepository.GetCampAsync(moniker);
+                if (existingCamp == null) return NotFound($"Could not find camp with moniker of {moniker}");
+
+                _mapper.Map(model, existingCamp);
+
+                if (await _campRepository.SaveChangesAsync())
+                {
+                    return _mapper.Map<CampModel>(existingCamp);
+                }
             }
             catch (Exception)
             {
