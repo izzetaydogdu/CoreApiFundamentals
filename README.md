@@ -14,3 +14,4 @@
 - ASP.NET Core 3.1
 - Entity Framework Core 3.1
 - Automapper 8.0.1
+- Postman v7.30
