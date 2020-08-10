@@ -11,9 +11,10 @@ namespace CoreCodeCamp.Controllers
     [ApiController]
     public class CampsController : ControllerBase
     {
-        public object Get()
-        {
-            return new { Moniker = "ATL2018", Name = "Atlanta Code Camp" };
+        [HttpGet]
+        public IActionResult GetCamps()
+        {           
+            return Ok(new { Moniker = "ATL2018", Name = "Atlanta Code Camp" });
         }
     }
 }
