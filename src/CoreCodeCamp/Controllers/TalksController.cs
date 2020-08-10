@@ -33,22 +33,22 @@ namespace CoreCodeCamp.Controllers
         {
             try
             {
-                var talks = await _campRepository.GetTalksByMonikerAsync(moniker,true);
+                var talks = await _campRepository.GetTalksByMonikerAsync(moniker, true);
 
                 return _mapper.Map<TalkModel[]>(talks);
             }
             catch (Exception)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError,"Failed to get Talks");
+                return StatusCode(StatusCodes.Status500InternalServerError, "Failed to get Talks");
             }
         }
 
         [HttpGet("{id:int}")]
-        public async Task<ActionResult<TalkModel>> Get(string moniker ,int id)
+        public async Task<ActionResult<TalkModel>> Get(string moniker, int id)
         {
             try
             {
-                var talk = await _campRepository.GetTalkByMonikerAsync(moniker,id,true);
+                var talk = await _campRepository.GetTalkByMonikerAsync(moniker, id, true);
 
                 return _mapper.Map<TalkModel>(talk);
             }
@@ -76,17 +76,51 @@ namespace CoreCodeCamp.Controllers
 
                 _campRepository.Add(talk);
 
-                if(await _campRepository.SaveChangesAsync())
+                if (await _campRepository.SaveChangesAsync())
                 {
                     var url = _linkGenerator.GetPathByAction(HttpContext, "Get", values: new { moniker, id = talk.TalkId });
 
-                    return Created(url,_mapper.Map<TalkModel>(talk));
+                    return Created(url, _mapper.Map<TalkModel>(talk));
                 }
                 else
                 {
                     return BadRequest("Failed to save new Talk");
                 }
 
+            }
+            catch (Exception)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "Failed to get Talk");
+            }
+        }
+
+        [HttpPut("id:int")]
+        public async Task<ActionResult<TalkModel>> Put(string moniker, int id, TalkModel model)
+        {
+            try
+            {
+                var talk = await _campRepository.GetTalkByMonikerAsync(moniker, id, true);
+                if (talk == null) return NotFound("Coundt find the talk");
+
+                _mapper.Map(model, talk);
+
+                if (model.Speaker != null)
+                {
+                    var speaker = await _campRepository.GetSpeakerAsync(model.Speaker.SpeakerId);
+                    if (speaker != null)
+                    {
+                        talk.Speaker = speaker;
+                    }
+                }
+
+                if (await _campRepository.SaveChangesAsync())
+                {
+                    return _mapper.Map<TalkModel>(talk);
+                }
+                else
+                {
+                    return BadRequest("Failed to update database.");
+                }
             }
             catch (Exception)
             {
