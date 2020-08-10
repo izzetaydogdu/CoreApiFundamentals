@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.OleDb;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -113,7 +114,7 @@ namespace CoreCodeCamp.Controllers
                 return this.StatusCode(StatusCodes.Status500InternalServerError, "Database Failure");
             }
 
-            return BadRequest();
+            return BadRequest("Failed to create new camp");
         }
 
         [HttpPut("{moniker}")]
@@ -136,7 +137,30 @@ namespace CoreCodeCamp.Controllers
                 return this.StatusCode(StatusCodes.Status500InternalServerError, "Database Failure");
             }
 
-            return BadRequest();
+            return BadRequest("Failed to update the camp");
+        }
+
+        [HttpDelete("{moniker}")]
+        public async Task<IActionResult> Delete(string moniker)
+        {
+            try
+            {
+                var existingCamp = await _campRepository.GetCampAsync(moniker);
+                if (existingCamp == null) return NotFound();
+
+                _campRepository.Delete(existingCamp);
+
+                if(await _campRepository.SaveChangesAsync())
+                {
+                    return Ok();
+                }
+            }
+            catch (Exception)
+            {
+                return this.StatusCode(StatusCodes.Status500InternalServerError, "Database Failure");
+            }
+
+            return BadRequest("Failed to delete the camp");
         }
     }
 }
