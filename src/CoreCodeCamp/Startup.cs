@@ -37,12 +37,11 @@ namespace CoreCodeCamp
 
             services.AddApiVersioning(opt =>
             {
-            opt.AssumeDefaultVersionWhenUnspecified = true;
-            opt.DefaultApiVersion = new ApiVersion(1, 1);
-            opt.ReportApiVersions = true;
-            opt.ApiVersionReader = ApiVersionReader.Combine(
-                new HeaderApiVersionReader("X-Version"),                      // Key : X-Version  Value : [Version]
-                new QueryStringApiVersionReader("ver","version"));            // ..api/camps?ver=2.0 OR ..api/camps?version=2.0
+                opt.AssumeDefaultVersionWhenUnspecified = true;
+                opt.DefaultApiVersion = new ApiVersion(1, 1);
+                opt.ReportApiVersions = true;
+                opt.ApiVersionReader = new UrlSegmentApiVersionReader();
+
             });
 
             //change defualt api version as 1.1  -> .../api/camps?api-version=1.1 will work
