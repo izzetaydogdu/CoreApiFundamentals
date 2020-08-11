@@ -34,7 +34,12 @@ namespace CoreCodeCamp
 
             //default api version is 1.0  -> .../api/camps?api-version=1.0 will work 
 
-            services.AddApiVersioning(opt=> { opt.DefaultApiVersion = new ApiVersion(1, 1); });
+            services.AddApiVersioning(opt=> 
+            {
+                opt.AssumeDefaultVersionWhenUnspecified = true;
+                opt.DefaultApiVersion = new ApiVersion(1, 1);
+                opt.ReportApiVersions = true;
+            });
 
             //change defualt api version as 1.1  -> .../api/camps?api-version=1.1 will work
 
