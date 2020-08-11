@@ -1,4 +1,4 @@
-# CoreApiFundamentals  by  [Shawn Wildermuth](https://app.pluralsight.com/profile/author/shawn-wildermuth)
+# CoreApiFundamentals  
 
 ### What is this project built with ?
 - Visual Studio 2019 (16.6)
@@ -10,3 +10,5 @@
 ### Others 
 - Git & GitHub
 - Postman v7.30
+
+Pluralsight Courses by  [Shawn Wildermuth](https://app.pluralsight.com/profile/author/shawn-wildermuth)
