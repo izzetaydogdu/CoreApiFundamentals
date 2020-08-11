@@ -11,4 +11,4 @@
 - Git & GitHub
 - Postman v7.30
 
-Details see Wiki page!
+
